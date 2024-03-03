@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:ollama_flutter_app/src/router/app_router.gr.dart';
 
 @RoutePage()
@@ -15,7 +16,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Flutter Home Page'),
+        title: const Text('Flutter Ollama App'),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
@@ -28,9 +29,24 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: const Center(
-        child: Text(
-          'Welcome to Flutter Home Page',
-          style: TextStyle(fontSize: 24.0),
+        child: Stack(
+          children: [
+            SpinKitPulse(
+              color: Colors.purple,
+              size: 200.0,
+              duration: Duration(seconds: 3),
+            ),
+            SpinKitRipple(
+              color: Colors.grey,
+              size: 200.0,
+            ),
+            Center(
+              child: Text(
+                'Ollama',
+                style: TextStyle(fontSize: 24.0),
+              ),
+            ),
+          ],
         ),
       ),
       bottomNavigationBar: BottomAppBar(
