@@ -1,0 +1,44 @@
+name: ollama_flutter_app
+description: "A new Flutter project."
+
+# Prevent accidental publishing to pub.dev.
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  auto_route: ^7.8.4
+  dartz: ^0.10.1
+  dio: ^5.4.1
+  equatable: ^2.0.5
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^8.1.4
+  flutter_localizations:
+    sdk: flutter
+  get_it: ^7.6.7
+  http_client: ^1.5.3
+  injectable: ^2.3.2
+  ollama: ^1.0.2
+  rxdart: ^0.27.7
+
+dev_dependencies:
+  auto_route_generator: ^7.3.2
+  build_runner: ^2.4.8
+  flutter_lints: ^3.0.0
+  flutter_test:
+    sdk: flutter
+  injectable_generator: ^2.4.1
+
+flutter:
+  uses-material-design: true
+
+  # Enable generation of localized Strings from arb files.
+  generate: true
+
+  assets:
+    # Add assets from the images directory to the application.
+    - assets/images/
