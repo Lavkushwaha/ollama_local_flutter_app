@@ -2,7 +2,9 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:ollama_flutter_app/src/di/di.dart';
 import 'package:ollama_flutter_app/src/features/chat_feature/presentation/cubit/chat_cubit.dart';
+import 'package:ollama_flutter_app/src/services/store_service.dart';
 import 'package:rxdart/subjects.dart';
 
 @RoutePage()
@@ -20,6 +22,8 @@ class _ChatPageState extends State<ChatPage> {
   late ScrollController scrollController;
 
   bool _isUserDragging = false;
+  String userName = 'User';
+  String gpt = 'GPT';
 
   List<String> messages = [];
   final newMessage = [];
@@ -29,6 +33,7 @@ class _ChatPageState extends State<ChatPage> {
     messagesController = BehaviorSubject.seeded([]);
     loadingController = BehaviorSubject.seeded(false);
     scrollController = ScrollController();
+    getUserDetails();
     super.initState();
   }
 
@@ -39,6 +44,10 @@ class _ChatPageState extends State<ChatPage> {
     messages.clear();
     messagesController.close();
     loadingController.close();
+  }
+
+  void getUserDetails() async {
+    userName = await getIt<StoreService>().getUser();
   }
 
   void _scrollDown() {
@@ -224,7 +233,7 @@ class _ChatPageState extends State<ChatPage> {
                           width: 40,
                           height: 40,
                           decoration: BoxDecoration(
-                            color: Colors.blue,
+                            color: Colors.white,
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
@@ -237,13 +246,13 @@ class _ChatPageState extends State<ChatPage> {
                           ),
                           child: Center(
                             child: (snapshot.hasData && snapshot.data == true && mounted)
-                                ? const CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                ? const SpinKitPulse(
+                                    color: Colors.purple,
+                                    size: 50.0,
                                   )
                                 : const Icon(
                                     Icons.send,
-                                    color: Colors.white,
+                                    color: Colors.purple,
                                   ),
                           ),
                         ),
@@ -262,8 +271,8 @@ class _ChatPageState extends State<ChatPage> {
   void sendMessage() {
     String message = _controller.text;
     if (message.isNotEmpty) {
-      messages.add('User: $message');
-      messages.add('GPT : ');
+      messages.add('$userName : $message');
+      messages.add('$gpt : ');
       messagesController.add(messages);
       loadingController.add(true);
       context.read<ChatCubit>().getChatResponse(userInput: message);

@@ -28,7 +28,7 @@ class StoreService {
 
   Future<String> getUser() async {
     final res = preferences.getString(userKey);
-    return res ?? 'user';
+    return res ?? 'User';
   }
 
   // BASE URL DETAILS
@@ -65,7 +65,7 @@ class StoreService {
   }
 
   Future<int> getPort() async {
-    final res = preferences.getInt(baseUrlKey);
+    final res = preferences.getInt(portKey);
     if (res != null) {
       return res;
     } else {
@@ -95,7 +95,7 @@ class StoreService {
     if (model == null || model.isEmpty) {
       return;
     }
-    await preferences.setString(customPathKey, model);
+    await preferences.setString(customModelKey, model);
   }
 
   Future<String> getModel() async {
@@ -105,5 +105,9 @@ class StoreService {
     } else {
       return defaultModel;
     }
+  }
+
+  Future<void> clearAll() async {
+    await preferences.clear();
   }
 }
