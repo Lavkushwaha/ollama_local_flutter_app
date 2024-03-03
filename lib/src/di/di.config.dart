@@ -13,6 +13,7 @@ import 'dart:io' as _i8;
 import 'package:dio/dio.dart' as _i6;
 import 'package:get_it/get_it.dart' as _i1;
 import 'package:injectable/injectable.dart' as _i2;
+import 'package:shared_preferences/shared_preferences.dart' as _i9;
 
 import '../constants/endpoints/endpoints.dart' as _i3;
 import '../features/chat_feature/data/datasource/remote_chat_datasource.dart'
@@ -20,8 +21,9 @@ import '../features/chat_feature/data/datasource/remote_chat_datasource.dart'
 import '../features/chat_feature/domain/repository/chat_repository.dart' as _i5;
 import '../features/chat_feature/domain/usecase/get_chat_response_usecase.dart'
     as _i7;
-import '../features/chat_feature/presentation/cubit/chat_cubit.dart' as _i9;
-import 'di_register_modules.dart' as _i10;
+import '../features/chat_feature/presentation/cubit/chat_cubit.dart' as _i11;
+import '../services/store_service.dart' as _i10;
+import 'di_register_modules.dart' as _i12;
 
 const String _dev = 'dev';
 const String _production = 'production';
@@ -52,10 +54,13 @@ extension GetItInjectableX on _i1.GetIt {
     gh.lazySingleton<_i7.GetChatResponseUsecase>(
         () => _i7.GetChatResponseUsecase(gh<_i5.ChatRepository>()));
     gh.lazySingleton<_i8.HttpClient>(() => registerModule.httpClient);
-    gh.factory<_i9.ChatCubit>(
-        () => _i9.ChatCubit(gh<_i7.GetChatResponseUsecase>()));
+    gh.singletonAsync<_i9.SharedPreferences>(
+        () => registerModule.sharedPreferences);
+    gh.lazySingleton<_i10.StoreService>(() => registerModule.storeService);
+    gh.factory<_i11.ChatCubit>(
+        () => _i11.ChatCubit(gh<_i7.GetChatResponseUsecase>()));
     return this;
   }
 }
 
-class _$RegisterModule extends _i10.RegisterModule {}
+class _$RegisterModule extends _i12.RegisterModule {}

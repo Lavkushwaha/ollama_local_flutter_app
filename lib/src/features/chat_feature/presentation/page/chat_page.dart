@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:ollama_flutter_app/src/features/chat_feature/presentation/cubit/chat_cubit.dart';
 import 'package:rxdart/subjects.dart';
 
@@ -51,9 +52,29 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chat Page'),
-      ),
+      appBar: AppBar(title: const Text('Chat Page'), actions: [
+        StreamBuilder(
+            stream: loadingController,
+            builder: (context, snapshot) {
+              if (snapshot.hasData && snapshot.data == true && mounted) {
+                return const SizedBox(
+                    height: 50,
+                    width: 50,
+                    // child: CircularProgressIndicator(
+                    //   strokeWidth: 1,
+                    // ),
+                    child: SpinKitPulse(
+                      color: Colors.purple,
+                      size: 50.0,
+                    ));
+              } else {
+                return const SizedBox.shrink();
+              }
+            }),
+        const SizedBox(
+          width: 10,
+        )
+      ]),
       body: GestureDetector(
         onVerticalDragStart: (_) {
           _isUserDragging = true;
@@ -114,41 +135,121 @@ class _ChatPageState extends State<ChatPage> {
                 },
               ),
             ),
+            // Padding(
+            //   padding: const EdgeInsets.all(8.0),
+            //   child: Row(
+            //     children: [
+            //       Expanded(
+            //         child: TextField(
+            //           controller: _controller,
+            //           decoration: const InputDecoration(
+            //             hintText: 'Enter your message',
+            //           ),
+            //           onSubmitted: (v) {
+            //             sendMessage();
+            //           },
+            //         ),
+            //       ),
+            //       const SizedBox(width: 8.0),
+            //       StreamBuilder<bool>(
+            //           stream: loadingController,
+            //           builder: (context, snapshot) {
+            //             return ElevatedButton(
+            //               onPressed: (snapshot.hasData && snapshot.data == true)
+            //                   ? null
+            //                   : () {
+            //                       sendMessage();
+            //                     },
+            //               child: (snapshot.hasData && snapshot.data == true && mounted)
+            //                   ? const SizedBox(
+            //                       height: 20,
+            //                       width: 20,
+            //                       // child: CircularProgressIndicator(
+            //                       //   strokeWidth: 1,
+            //                       // ),
+            //                       child: SpinKitPulse(
+            //                         color: Colors.white,
+            //                         size: 20.0,
+            //                       ))
+            //                   : const Text('Send'),
+            //             );
+            //           }),
+            //     ],
+            //   ),
+            // ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
                   Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      decoration: const InputDecoration(
-                        hintText: 'Enter your message',
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 1,
+                            blurRadius: 3,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
                       ),
-                      onSubmitted: (v) {
-                        sendMessage();
-                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                        child: TextField(
+                          controller: _controller,
+                          decoration: const InputDecoration(
+                            hintText: 'Type a message...',
+                            border: InputBorder.none,
+                          ),
+                          onSubmitted: (v) {
+                            sendMessage();
+                          },
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8.0),
                   StreamBuilder<bool>(
-                      stream: loadingController,
-                      builder: (context, snapshot) {
-                        return ElevatedButton(
-                          onPressed: (snapshot.hasData && snapshot.data == true)
-                              ? null
-                              : () {
-                                  sendMessage();
-                                },
-                          child: (snapshot.hasData && snapshot.data == true)
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 1,
-                                  ))
-                              : const Text('Send'),
-                        );
-                      }),
+                    stream: loadingController,
+                    builder: (context, snapshot) {
+                      return GestureDetector(
+                        onTap: (snapshot.hasData && snapshot.data == true)
+                            ? () {
+                                context.read<ChatCubit>().abortRequest();
+                              }
+                            : sendMessage,
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.blue,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 1,
+                                blurRadius: 3,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: (snapshot.hasData && snapshot.data == true && mounted)
+                                ? const CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  )
+                                : const Icon(
+                                    Icons.send,
+                                    color: Colors.white,
+                                  ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
             ),

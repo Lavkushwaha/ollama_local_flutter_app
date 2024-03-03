@@ -11,7 +11,6 @@ class AppRouter extends $AppRouter {
         AutoRoute(
           page: HomeRoute.page,
           initial: true,
-          keepHistory: false,
         ),
 
         // CHAT PAGE

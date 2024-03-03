@@ -2,15 +2,20 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:ollama_flutter_app/src/features/chat_feature/domain/entity/chat_response_entity.dart'; // Importing Ollama class
+import 'package:ollama_flutter_app/src/di/di.dart';
+import 'package:ollama_flutter_app/src/features/chat_feature/domain/entity/chat_response_entity.dart';
+import 'package:ollama_flutter_app/src/services/store_service.dart'; // Importing Ollama class
 
 abstract class ChatDatasource {
   Stream<ChatResponseEntity> getChatResponseFromServer({required String userInput});
+  Future<void> abortCurrentRequest();
 }
 
 class RemoteChatDatasource extends ChatDatasource {
   final HttpClient _client;
   RemoteChatDatasource(this._client);
+
+  late HttpClientRequest request;
 
   // @override
   // Stream<ChatResponseEntity> getChatResponseFromServer({required String userInput}) async* {
@@ -75,8 +80,20 @@ class RemoteChatDatasource extends ChatDatasource {
   @override
   Stream<ChatResponseEntity> getChatResponseFromServer({required String userInput}) async* {
     try {
-      HttpClientRequest request = await _client.post('10.0.2.2', 11434, '/api/generate');
-      Map<String, dynamic> jsonMap = {"model": "llama2", "prompt": userInput};
+      final baseUrl = await getIt<StoreService>().getBaseUrl();
+      final basePort = await getIt<StoreService>().getPort();
+      final basePath = await getIt<StoreService>().getPath();
+      final baseModel = await getIt<StoreService>().getModel();
+
+      request = await _client.post(
+        baseUrl,
+        basePort,
+        basePath,
+      );
+      Map<String, dynamic> jsonMap = {
+        "model": baseModel,
+        "prompt": userInput,
+      };
       String jsonString = json.encode(jsonMap);
       List<int> bodyBytes = utf8.encode(jsonString);
       request.add(bodyBytes);
@@ -102,6 +119,16 @@ class RemoteChatDatasource extends ChatDatasource {
       rethrow;
     } finally {
       // _client.close();
+    }
+  }
+
+  @override
+  Future<void> abortCurrentRequest() async {
+    try {
+      request.abort();
+      request.addError('request aborted');
+    } catch (e) {
+      debugPrint(e.toString());
     }
   }
 }

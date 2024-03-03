@@ -32,6 +32,12 @@ class ChatCubit extends Cubit<ChatState> {
     );
   }
 
+  abortRequest() {
+    emit(ChatLoading());
+    usecase.abortRequest();
+    emit(const ChatError('request aborted try again'));
+  }
+
   @override
   Future<void> close() {
     _responseSubscription?.cancel();

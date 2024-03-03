@@ -22,4 +22,9 @@ class ChatRepositoryImpl extends ChatRepository {
   Stream<ChatResponseEntity> getChatResponseStream({required String userInput}) {
     return ds.getChatResponseFromServer(userInput: userInput).asBroadcastStream();
   }
+
+  @override
+  Future<void> abortRequest()async {
+    return await ds.abortCurrentRequest();
+  }
 }

@@ -20,6 +20,8 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
+              AutoRouter.of(context).push(const SettingsRoute());
+
               // Add your settings functionality here
             },
           ),
